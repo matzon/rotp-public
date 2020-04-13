@@ -34,8 +34,10 @@ public enum RaceFactory implements Base {
     public void loadDataFiles() {
         log("Loading Races: ", raceListFile);
         BufferedReader in = reader(raceListFile);
-        if (in == null)
+        if (in == null) {
+            err("RaceFactory.loadRaces -- File not found: " + raceListFile);
             return;
+        }
         try {
             String input;
             while ((input = in.readLine()) != null)

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015-2020 Ray Fowler
- * 
+ *
  * Licensed under the GNU General Public License, Version 3 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     https://www.gnu.org/licenses/gpl-3.0.html
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,11 +42,9 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import javax.swing.BorderFactory;
@@ -471,7 +469,7 @@ public interface Base {
                 res *= d;
         }
         else if (e < 0) {
-            for (int i=-1;i>=e;i--) 
+            for (int i=-1;i>=e;i--)
                 res /= d;
                 }
         return res;
@@ -566,7 +564,7 @@ public interface Base {
         return false;
     }
     public default URL url(String n) {
-        return Rotp.class.getResource(n);
+        return Rotp.class.getResource("/" + n);
     }
     public default ImageIcon icon(String n)  {
         return icon(n, true);
@@ -585,11 +583,11 @@ public interface Base {
             return null;
         }
         if (resource == null) {
-            if (logError) 
+            if (logError)
                 err("Base.icon() -- Resource not found:", n);
             return null;
         }
-        else 
+        else
             return new ImageIcon(resource);
     }
     public default File file(String n) {
@@ -598,43 +596,23 @@ public interface Base {
     public default InputStream fileInputStream(String n) {
         String fullString = "../rotp/" +n;
 
-        try { return new FileInputStream(new File(Rotp.jarPath(), n)); } 
+        try { return new FileInputStream(new File(Rotp.jarPath(), n)); }
         catch (FileNotFoundException e) {
-            try { return new FileInputStream(fullString); } 
+            try { return new FileInputStream(fullString); }
             catch (FileNotFoundException ex) {
                 return Rotp.class.getResourceAsStream(n);
             }
         }
     }
     public default BufferedReader reader(String n) {
-        String fullString = "../rotp/" +n;
         FileInputStream fis = null;
         InputStreamReader in = null;
         InputStream zipStream = null;
 
-        try {
-            fis = new FileInputStream(new File(Rotp.jarPath(), n));
-        } catch (FileNotFoundException e) {
-            try {
-                        fis = new FileInputStream(fullString);
-            } catch (FileNotFoundException ex) {
-                zipStream = Rotp.class.getResourceAsStream(n);
-            }
-        }
+        InputStream resource = Base.class.getResourceAsStream("/" + n);
+        Objects.requireNonNull(resource, String.format("Base.reader() -- FileNotFoundException: %s", n));
 
-        try {
-            if (fis != null)
-                in = new InputStreamReader(fis, "UTF-8");
-            else if (zipStream != null)
-                       in = new InputStreamReader(zipStream, "UTF-8");
-            else
-                err("Base.reader() -- FileNotFoundException:", n);
-        } catch (IOException ex) {
-            err("Base.reader() -- UnsupportedEncodingException: ", n);
-        }
-
-        if (in == null)
-            return null;
+        in = new InputStreamReader(resource, StandardCharsets.UTF_8);
 
         return new BufferedReader(in);
     }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2015-2020 Ray Fowler
- * 
+ *
  * Licensed under the GNU General Public License, Version 3 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     https://www.gnu.org/licenses/gpl-3.0.html
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Objects;
+
 import rotp.Rotp;
 
 public class WavClip  implements SoundClip, Base {
@@ -35,29 +37,29 @@ public class WavClip  implements SoundClip, Base {
     int position = 0;
     boolean continuous = false;
     String style = "";
-    
+
     public static WavClip play(String fn, float vol) {
-        if (!loadedClips.containsKey(fn)) 
+        if (!loadedClips.containsKey(fn))
             loadedClips.put(fn, new WavClip(fn, vol));
-        
+
         WavClip wc = loadedClips.get(fn);
         wc.play();
         return wc;
     }
     public static WavClip playContinuously(String fn, float vol, String s) {
-         if (!loadedClips.containsKey(fn)) 
+         if (!loadedClips.containsKey(fn))
             loadedClips.put(fn, new WavClip(fn, vol));
-        
+
         WavClip wc = loadedClips.get(fn);
         wc.style = s;
         wc.playContinuously();
         return wc;
-    }          
+    }
     public  WavClip(String fn, float vol) {
         filename = fn;
         volume = vol;
         loaded = false;
-        
+
         AudioInputStream ais = null;
         try {
             if (!loaded) {
@@ -114,14 +116,9 @@ public class WavClip  implements SoundClip, Base {
         clip.stop();
     }
     public static InputStream wavFileStream(String n) {
-        String fullString = "../rotp/" +n;
-
-        try { return new FileInputStream(new File(Rotp.jarPath(), n)); } 
-        catch (FileNotFoundException e) {
-                try { return new FileInputStream(fullString); } 
-                catch (FileNotFoundException ex) {
-                    return Rotp.class.getResourceAsStream(n);
-                }
-        }
+        String resourcePath = "/" + n;
+        InputStream resource = WavClip.class.getResourceAsStream(resourcePath);
+        Objects.requireNonNull(resource, "File not found: " + resourcePath);
+        return resource;
     }
 }

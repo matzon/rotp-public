@@ -1,12 +1,12 @@
 /*
  * Copyright 2015-2020 Ray Fowler
- * 
+ *
  * Licensed under the GNU General Public License, Version 3 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     https://www.gnu.org/licenses/gpl-3.0.html
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -96,7 +96,7 @@ public class UserPreferences {
             out.println(keyFormat("UI_TEXTURES")+ yesOrNo(textures));
             out.println(keyFormat("UI_TEXTURE_LEVEL")+(int) (uiTexturePct()*100));
             out.println(keyFormat("LANGUAGE")+ languageDir());
-            for (String raceKey: raceKeys) 
+            for (String raceKey: raceKeys)
               out.println(keyFormat(raceKey)+raceNames.get(raceKey));
         }
         catch (IOException e) {
@@ -104,7 +104,7 @@ public class UserPreferences {
         }
     }
     private static String keyFormat(String s)  { return String.format(keyFormat, s); }
-    
+
     private static void loadPreferenceLine(String line) {
         if (line.isEmpty())
             return;
@@ -162,7 +162,7 @@ public class UserPreferences {
         String idUpper = id.toUpperCase();
         if (raceNames.containsKey(idUpper))
             return raceNames.get(idUpper);
-        
+
         raceNames.put(idUpper, defaultNames);
         return defaultNames;
     }
