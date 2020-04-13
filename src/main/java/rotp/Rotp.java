@@ -1,12 +1,12 @@
 /*
  * Copyright 2015-2020 Ray Fowler
- * 
+ *
  * Licensed under the GNU General Public License, Version 3 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     https://www.gnu.org/licenses/gpl-3.0.html
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,18 +15,6 @@
  */
 package rotp;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.management.ManagementFactory;
-import java.net.URLDecoder;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import rotp.model.game.GameSession;
 import rotp.ui.BasePanel;
 import rotp.ui.RotPUI;
@@ -34,14 +22,27 @@ import rotp.ui.SwingExceptionHandler;
 import rotp.ui.UserPreferences;
 import rotp.util.FontManager;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.lang.management.ManagementFactory;
+import java.net.URLDecoder;
+import java.util.Properties;
+
 public class Rotp {
     private static final int MB = 1048576;
+    public static final String PATH_BUILD_INFO = "/META-INF/build-info.properties";
     public static int IMG_W = 1229;
     public static int IMG_H = 768;
     public static String jarFileName = "Remnants.jar";
     private static String jarPath;
     private static JFrame frame;
-    public static String releaseId = "Beta 1.2";
+    public static String releaseId;
     public static long startMs = System.currentTimeMillis();
     public static long maxHeapMemory = Runtime.getRuntime().maxMemory() / 1048576;
     public static long maxUsedMemory;
@@ -49,7 +50,7 @@ public class Rotp {
     private static float resizeAmt =  -1.0f;
     public static int actualAlloc = -1;
     public static boolean reloadRecentSave = false;
-    
+
     public static void main(String[] args) {
         frame = new JFrame("Remnants of the Precursors");
         if (args.length == 0) {
@@ -57,6 +58,7 @@ public class Rotp {
                 return;
             logging = false;
         }
+        loadVersionInformation();
         reloadRecentSave = args.length > 0 && args[0].equals("reload");
         stopIfInsufficientMemory(frame, (int)maxHeapMemory);
         Thread.setDefaultUncaughtExceptionHandler(new SwingExceptionHandler());
@@ -72,11 +74,28 @@ public class Rotp {
 
         setFrameSize();
 
-        if (reloadRecentSave) 
+        if (reloadRecentSave)
             GameSession.instance().loadRecentSession(false);
         frame.setResizable(false);
         frame.setVisible(true);
     }
+
+    /**
+     * Load version information, if present, from external PATH_BUILD_INFO file
+     */
+    private static void loadVersionInformation() {
+        Properties properties = new Properties();
+        try {
+            InputStream buildInfo = Rotp.class.getResourceAsStream(PATH_BUILD_INFO);
+            if (buildInfo != null) {
+                properties.load(buildInfo);
+            }
+        } catch (IOException e) {
+            System.err.println(String.format("Unable to read %s for build releaseId: %s", PATH_BUILD_INFO, e.getMessage()));
+        }
+        releaseId = properties.getProperty("build.version", "source");
+    }
+
     public static void setFrameSize() {
         resizeAmt = -1;
         FontManager.current().resetFonts();
@@ -141,7 +160,7 @@ public class Rotp {
         } catch (IOException ex) {
             System.err.println("Error attempting restart: ");
             ex.printStackTrace();
-        }            
+        }
     }
     public static void restartFromLowMemory() {
         restartWithMoreMemory(frame, true);
@@ -172,7 +191,7 @@ public class Rotp {
         System.out.println("restarting with MB:"+actualAlloc);
         if (!reload && (actualAlloc < allocMb))
             return false;
-        
+
         try {
             stopIfInsufficientMemory(frame, actualAlloc*9/10);
             String argString = reload ? " reload" : " arg1";
