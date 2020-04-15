@@ -127,7 +127,7 @@ EVENT_PLAGUE                      | A deadly plague strikes the [target_race] wo
 EVENT_PLAGUE_2                    | The deadly plague in the [system] system persists. Scientists estimate that another [amt] RP are required to find a cure.
 EVENT_PLAGUE_3                    | [target_race] scientists have found a cure deadly plague afflicting the [system] system. The system quarantine has been lifted.
 EVENT_REBELLION                   | The [target_race] world in the [system] system has gone into revolt, ceasing all planetary production. The revolt will continue until the rebellion is defeated militarily.
-EVENT_SUPERNOVA                   | Scientists predict that the star in the [system] system will go supernova within [years] years. They recommend diverting all research in the system towards finding a solution.
+EVENT_SUPERNOVA                   | [target_race] scientists predict that the star in the [system] system will go supernova within [years] years. They recommend diverting all research in the system towards finding a solution.
 EVENT_SUPERNOVA_2                 | The threat of supernova in the [system] system within [years] years remains. Scientists estimate that another [amt] RP may be enough to forestall this catastrophe.
 EVENT_SUPERNOVA_3                 | Working feverishly, [target_race] physicists in the [system] system have found a way to delay to supernova of their nearby star for the foreseeable future.
 EVENT_SUPERNOVA_4                 | The star in the [system] system has gone supernova, irradiating the [target_race] world, devastating its environment and killing millions.
@@ -325,6 +325,7 @@ MAIN_YEAR_DISPLAY                 | Year  %1
 MAIN_TURN_DISPLAY                 | Turn  %1
 
 MAIN_UNEXPLORED_SYSTEM            | Unexplored
+MAIN_ALLIED_COLONY                | Allied Colony
 MAIN_SYSTEM_RANGE                 | %1 Light-Years
 MAIN_OUT_OF_RANGE_DESC            | Out of Range
 MAIN_SCOUT_RANGE_DESC             | Reserve Fuel Tanks Required
@@ -576,6 +577,7 @@ PLANETS_SPENDING_COSTS            | Empire Spending
 PLANETS_COSTS_DESC                | Each colony pays a percent of its production to support empire spending.
 PLANETS_COSTS_SHIPS               | Ship Maintenance
 PLANETS_COSTS_BASES               | Missile Bases
+PLANETS_COSTS_STARGATES           | Stargates
 PLANETS_COSTS_SPYING              | Spying
 PLANETS_COSTS_SECURITY            | Security
 PLANETS_TOTAL_INCOME              | Annual Income
@@ -1036,6 +1038,7 @@ SHIP_COMBAT_PROMPT                | Enter combat?
 SHIP_COMBAT_PROMPT_YES            | Yes
 SHIP_COMBAT_PROMPT_NO             | No
 SHIP_COMBAT_MISS                  | Miss
+SHIP_COMBAT_DEFLECTED             | Deflected
 SHIP_COMBAT_DESTROYED             | Destroyed!
 SHIP_COMBAT_STASIS                | Stasis
 SHIP_COMBAT_RESULTS               | The %1 fleet was victorious at %2!
@@ -1066,6 +1069,7 @@ SHIP_COMBAT_ACTION_MOVE           | Move here
 SHIP_COMBAT_ACTION_TELEPORT       | Teleport here
 SHIP_COMBAT_ACTION_RANGE          | Out of Range
 SHIP_COMBAT_ACTION_NO_MISSILES    | No missiles remaining
+SHIP_COMBAT_ACTION_NO_BOMBS       | No bombs remaining
 SHIP_COMBAT_ACTION_FIRED          | Already fired
 SHIP_COMBAT_ACTION_USED           | Already used
 SHIP_COMBAT_ACTION_BAD_TARGET     | Invalid target

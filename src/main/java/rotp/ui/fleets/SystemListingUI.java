@@ -107,7 +107,18 @@ public abstract class SystemListingUI extends BasePanel implements MouseListener
     protected Color selectedRedC()  { return selectedRedC; }
     protected Color unselectedRedC(){ return unselectedRedC; }
     protected int dataFontSize()    { return 20; }
-    public void open() { startY = 0; }
+    public void open() { 
+        int rowH = rowHeight();
+        int listH = getHeight()-rowH;
+        float displayedRows = (float) listH/rowH;
+        
+        int selectedIndex = systems().indexOf(selectedSystem());
+        int rowIndex = selectedIndex+1;
+        if (rowIndex <= displayedRows)
+            startY = 0;
+        else
+            startY = (int) (rowH * (rowIndex - displayedRows));
+    }
     public void close() { }
     private void initModel() {
         initPalette();
@@ -218,7 +229,7 @@ public abstract class SystemListingUI extends BasePanel implements MouseListener
             y0 += rowH;
             rowNum++;
         }
-        
+       
         int selectedIndex = selectedIndex();
         if (selectedIndex < minSelectableIndex)
             selectedSystem(systems().get(minSelectableIndex),true);
@@ -249,12 +260,30 @@ public abstract class SystemListingUI extends BasePanel implements MouseListener
     public boolean scrollUp()    { 
         int prevY = startY;
         startY = max(0, startY-s10);
-        return startY != prevY;
+        boolean changed = startY != prevY;
+        if ((startY == 0) && (startY == prevY)) {
+            int index = selectedIndex();
+            if (index > 0) {
+                index--;
+                selectedSystem(systems().get(index), true);
+                changed = true;
+            }
+        }
+        return changed;
     }
     public boolean scrollDown()  { 
         int prevY = startY;
         startY = min(maxY, startY+s10);
-        return startY != prevY;
+        boolean changed = startY != prevY;
+        if ((startY == maxY) && (startY == prevY)) {
+            int index = selectedIndex();
+            if (index < systems().size()-1) {
+                index++;
+                selectedSystem(systems().get(index), true);
+                changed = true;
+            }
+        }
+        return changed;
     }
     private int selectedIndex()         { return systems().indexOf(selectedSystem()); }
     private void scrollY(int deltaY) {

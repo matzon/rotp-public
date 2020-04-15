@@ -704,6 +704,11 @@ public class AIDiplomat implements Base, Diplomat {
         // never willing to declare war on an NAP partner if we are honorable
         if (empire.pactWith(target.id) && empire.leader().isHonorable())
             return v.refuse(DialogueManager.DECLINE_OFFER, target);
+        
+        // if a peacy treaty is in effect with the target, then refuse
+        if (empire.viewForEmpire(target.id).embassy().atPeace()) {
+            return v.refuse(DialogueManager.DECLINE_PEACE_TREATY, target);
+        }
 
          // will always declare war if allied with the requestor and he is already at war with the target
         if (requestor.alliedWith(id(empire)) && requestor.atWarWith(target.id))
@@ -1220,19 +1225,32 @@ public class AIDiplomat implements Base, Diplomat {
         if (empire.lastCouncilVoteEmpId() == c.id)
             return true;
 
+        if (c.orionCouncilBonus() > 0)
+            return true;
+        
         EmpireView cv1 = empire.viewForEmpire(c);
-
-        float pct = cv1.embassy().relations() + c.race().councilBonus() + c.orionCouncilBonus();
         if (cv1.embassy().alliance())
-                pct += 1.75;
-        if (cv1.embassy().pact())
-                pct += 1.5;
-        if (cv1.embassy().noTreaty())
-                pct += 1.25;
-        if (cv1.embassy().anyWar())
-                pct += 1;
+            return true;
+        if (empire.leader().isPacifist())
+            return true;
+        if (cv1.embassy().pact() && empire.leader().isHonorable())
+            return true;
+        
+        if (cv1.embassy().anyWar()) {
+            if (empire.leader().isXenophobic())
+                return false;
+            else if (empire.leader().isAggressive())
+                return random() < 0.5f;
+            else
+                return random() < 0.75f;
+        }
+        
+        if (empire.leader().isXenophobic())
+            return random() < 0.50f;
+        else if (empire.leader().isErratic())
+            return random() < 0.75f;
 
-        return (random() < pct);
+        return random() < 0.90f;
     }
     // ----------------------------------------------------------
 // PRIVATE METHODS

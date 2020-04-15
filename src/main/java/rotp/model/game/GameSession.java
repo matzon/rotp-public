@@ -187,6 +187,14 @@ public final class GameSession implements Base, Serializable {
     public void addTurnNotification(TurnNotification notif) {
         notifications().add(notif);
     }
+    public void removePendingNotification(String key) {
+        List<TurnNotification> notifs = new ArrayList<>(notifications());
+        for (TurnNotification notif: notifs) {
+            if (notif.key().equals(key))
+                notifications.remove(notif);
+        }
+            
+    }
     public GameSession() {
         options(RulesetManager.current().defaultRuleset());
     }
@@ -244,6 +252,7 @@ public final class GameSession implements Base, Serializable {
         if (performingTurn())
             return;
 
+        performingTurn = true;
         nextTurnThread = new Thread(nextTurnProcess());
         nextTurnThread.start();
     }
@@ -365,13 +374,13 @@ public final class GameSession implements Base, Serializable {
                 exception(e);
             }
             finally {
-                performingTurn = false;
                 RotPUI.instance().mainUI().restoreMapState();
                 if (Rotp.memoryLow())
                     RotPUI.instance().mainUI().showMemoryLowPrompt();
                 // handle game over possibility
                 if (!session().status().inProgress())
                     RotPUI.instance().selectGameOverPanel();
+                performingTurn = false;
             }
         };
     }

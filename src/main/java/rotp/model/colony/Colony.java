@@ -643,12 +643,13 @@ public final class Colony implements Base, IMappedObject, Serializable {
         float reserveCost = prod * empire.empireTaxPct();
         float securityCost = prod * empire.totalSecurityCostPct();
         float shipCost = prod * empire.shipMaintCostPerBC();
+        float stargateCost = prod * empire.stargateCostPerBC();
         float tradeIncome = actualTradeIncome();
         float defenseCost = prod * empire.totalMissileBaseCostPct();
         float shipyardCost = shipyard().maintenanceCost();
         float transportCost = transportCost();
 
-        return prod - reserveCost - securityCost - defenseCost - shipyardCost - transportCost + tradeIncome - shipCost;
+        return prod - reserveCost - securityCost - defenseCost - shipyardCost - transportCost + tradeIncome - shipCost - stargateCost;
     }
     public float expectedPopulation() {
         return workingPopulation() + normalPopGrowth() + incomingTransports();
@@ -1033,11 +1034,12 @@ public final class Colony implements Base, IMappedObject, Serializable {
         if (population() <= 0)
             destroy();
     }
-     public void destroy() {
+    public void destroy() {
         if (isCapital())
-            empire().chooseNewCapital();
+            empire.chooseNewCapital();
         
-        starSystem().addEvent(new SystemDestroyedEvent(empire().lastAttacker()));
+        StarSystem sys = starSystem();
+        sys.addEvent(new SystemDestroyedEvent(empire.lastAttacker()));
 
         setPopulation(0);
         rebels = 0;
@@ -1047,12 +1049,17 @@ public final class Colony implements Base, IMappedObject, Serializable {
 
         transport = null;
         clearReserveIncome();
-        empire.removeColonizedSystem(starSystem());
+        empire.removeColonizedSystem(sys);
         planet.setColony(null);
         // update system views of civs that would notice
-        empire.sv.refreshFullScan(starSystem().id);
-        List<ShipFleet> fleets = starSystem().orbitingFleets();
-        for (ShipFleet fl : fleets)
-            fl.empire().sv.refreshFullScan(starSystem().id);
+        empire.sv.refreshFullScan(sys.id);
+        List<ShipFleet> fleets = sys.orbitingFleets();
+        for (ShipFleet fl : fleets) 
+            fl.empire().sv.refreshFullScan(sys.id);
+        
+        for (Empire emp: galaxy().empires()) {
+            if (emp.knowsOf(empire) && !emp.sv.name(sys.id).isEmpty()) 
+                emp.sv.view(sys.id).setEmpire();                   
+        }
     }
 }

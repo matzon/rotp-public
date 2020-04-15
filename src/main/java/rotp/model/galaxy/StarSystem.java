@@ -229,7 +229,7 @@ public class StarSystem implements Base, Sprite, IMappedObject, Serializable {
         return galaxy().ships.anyFleetAtSystem(emp.id, id) != null;
     }
     public ShipFleet orbitingFleetForEmpire(Empire emp) {
-        return galaxy().ships.orbitingFleet(emp.id, id);
+        return emp == null ? null : galaxy().ships.orbitingFleet(emp.id, id);
     }
     public ShipFleet retreatingFleetForEmpire(Empire emp, StarSystem s) {
         return galaxy().ships.retreatingFleet(emp.id, id, s.id);
@@ -622,7 +622,14 @@ public class StarSystem implements Base, Sprite, IMappedObject, Serializable {
         int r = map.scale(1.0f);
 
         Stroke prev = g.getStroke();
-        g.setStroke(BasePanel.stroke2);
+        int mod = map.animationCount()%15/5;
+        switch(mod) {
+            case 0: g.setStroke(BasePanel.stroke2); break;
+            case 1: g.setStroke(BasePanel.stroke3); break;
+            case 2:
+            default: g.setStroke(BasePanel.stroke4); break;
+        }
+
         if (emp == null)
             g.setColor(selectionC);
         else

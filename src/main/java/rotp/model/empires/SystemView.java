@@ -167,7 +167,7 @@ public class SystemView implements IMappedObject, Base, Serializable {
         setEmpire();
         setColonyData();
     }
-    private void setEmpire() {
+    public void setEmpire() {
         vEmpire = system().empire();
         if (!owner().aggressiveWith(id(vEmpire)))
             clearHostility();
@@ -271,7 +271,6 @@ public class SystemView implements IMappedObject, Base, Serializable {
     public int desiredMissileBases() {
         return (empire() == owner()) ? colony().defense().maxBases() : 0;
     }
-
     public boolean innerSystem()             { return locationSecurity() == INNER_SYSTEM; }
     public boolean supportSystem()           { return false; }
     public boolean borderSystem()            { return locationSecurity() == BORDER_SYSTEM; }
@@ -291,6 +290,8 @@ public class SystemView implements IMappedObject, Base, Serializable {
         if (!isColonized()) {
             if (!scouted()) 
                 return text("MAIN_UNSCOUTED");
+            else if (system().planet().isEnvironmentNone())
+                return text("MAIN_NO_PLANETS");
             else
                 return text("MAIN_NO_COLONIES");
         }
