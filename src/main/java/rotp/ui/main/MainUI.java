@@ -67,9 +67,9 @@ public class MainUI extends BasePanel implements IMapHandler {
     public static Color textBoxBackground = new Color(47,46,89);
     public static final Color transC = new Color(0,0,0,0);
 
-    public static final Color greenAlertC  = new Color(0,255,0);
-    public static final Color redAlertC    = new Color(255,0,0);
-    public static final Color yellowAlertC = new Color(255,255,0);
+    public static final Color greenAlertC  = new Color(0,255,0,192);
+    public static final Color redAlertC    = new Color(255,0,0,192);
+    public static final Color yellowAlertC = new Color(255,255,0,192);
     
     public static int panelWidth, panelHeight;
     static LinearGradientPaint alertBack;
@@ -422,7 +422,11 @@ public class MainUI extends BasePanel implements IMapHandler {
     }
     @Override
     public Sprite hoveringSprite()           { return (Sprite) sessionVar("MAINUI_HOVERING_SPRITE"); }
-    public void hoveringSprite(Sprite s)     { sessionVar("MAINUI_HOVERING_SPRITE", s); }
+    public void hoveringSprite(Sprite s)     { 
+        sessionVar("MAINUI_HOVERING_SPRITE", s); 
+        if (!session().performingTurn())
+            showDisplayPanel(); 
+    }
     public Sprite lastHoveringSprite()       { return (Sprite) sessionVar("MAINUI_LAST_HOVERING_SPRITE"); }
     public void lastHoveringSprite(Sprite s) { sessionVar("MAINUI_LAST_HOVERING_SPRITE", s); }
     @Override

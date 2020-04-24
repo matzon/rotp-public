@@ -16,11 +16,11 @@
 package rotp.model.combat;
 
 import rotp.model.ai.AmoebaShipCaptain;
+import rotp.model.events.RandomEventSpaceAmoeba;
 import rotp.model.galaxy.StarSystem;
 
 public class CombatStackSpaceAmoeba extends CombatStack {
     private static final int DAMAGE_FOR_SPLIT = 500;
-    public boolean justSpawned = false;
     public CombatStackSpaceAmoeba() {
         num = 1;
         maxHits = hits = 3500;
@@ -30,6 +30,7 @@ public class CombatStackSpaceAmoeba extends CombatStack {
         reversed = random() < .5;
         captain = new AmoebaShipCaptain();
         image = image("SPACE_AMOEBA");
+        scale = 1.5f;
     }
     @Override
     public String name()                { return text("SPACE_AMOEBA"); }
@@ -40,9 +41,11 @@ public class CombatStackSpaceAmoeba extends CombatStack {
     @Override
     public void beginTurn() {
         super.beginTurn();
-        if (justSpawned) {
-            justSpawned = false;
-            move = 0;
+        // ok, we are splitting
+        if ((maxHits - hits) >= DAMAGE_FOR_SPLIT) {
+            float newMaxHits = (maxHits - DAMAGE_FOR_SPLIT) / 2;
+            hits = maxHits = newMaxHits;
+            ((AmoebaShipCaptain)captain).splitAmoeba(this);
         }
     }
     @Override
@@ -51,11 +54,6 @@ public class CombatStackSpaceAmoeba extends CombatStack {
     public boolean canEat(CombatStack st)  { return (st instanceof CombatStackShip) || (st instanceof CombatStackColony); }
     @Override
     public boolean ignoreRepulsors()    { return true; }
-    @Override
-    public void attemptToHeal()         { 
-        float healAmt = 0.25f * (maxHits - hits);
-        hits = min(maxHits, hits+healAmt);
-    };
     @Override
     public boolean canAttack(CombatStack target)  { 
         if (target.destroyed()) 
@@ -77,12 +75,20 @@ public class CombatStackSpaceAmoeba extends CombatStack {
         if (!st.isShip() && !st.isColony())
             return;
         
-        st.num = 0;
         // only eats ships
         if (st.isShip()) {
             st.drawFadeOut(.025f);
             st.mgr.destroyStack(st); 
         }
+        else if (st.isColony()) {
+            CombatStackColony cStack = (CombatStackColony) st;
+            st.mgr.destroyStack(st);
+            RandomEventSpaceAmoeba.monster.destroyColony(st.mgr.system());
+            cStack.colonyDestroyed = true;
+        }
+
+        st.num = 0;
+
         // stop and enjoy the meal
         move = 0;
         if (st.mgr.ui != null)
@@ -92,12 +98,7 @@ public class CombatStackSpaceAmoeba extends CombatStack {
     public void endTurn() {
         super.endTurn();
             
-        // ok, we are splitting
-        if ((maxHits - hits) >= DAMAGE_FOR_SPLIT) {
-            float newMaxHits = (maxHits - DAMAGE_FOR_SPLIT) / 2;
-            hits = maxHits = newMaxHits;
-            ((AmoebaShipCaptain)captain).splitAmoeba(this);
-        }
+
     }
     @Override
     public boolean moveTo(int x1, int y1) {

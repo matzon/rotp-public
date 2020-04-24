@@ -104,7 +104,7 @@ public class CombatStack implements Base {
     public boolean isMonster()          { return false; }
     public boolean isPlayer()           { return (empire != null) && empire.isPlayer(); }
     public boolean isMissile()          { return false; }
-    public boolean destroyed()          { return ((num < 1) || (maxHits < 1)); }
+    public boolean destroyed()          { return ((num < 1) || (maxHits <= 0)); }
     public boolean isArmed()            { return false; }
     public boolean hasTarget()          { return target != null; }
     public CombatStack ward()           { return null; }
@@ -159,7 +159,8 @@ public class CombatStack implements Base {
     public float estimatedKills(CombatStack target)           { return 0; }
     public float estimatedKillPct(CombatStack target)         { return target.num == 0 ? 0 : estimatedKills(target) / target.num; }
     public void rotateToUsableWeapon(CombatStack target)      {  }
-    public void fireWeapon(CombatStack target, int i) { }
+    public void fireWeapon(CombatStack target, int i, boolean shots) { }
+    public void fireWeapon(CombatStack target, int i) { fireWeapon(target,i,false); }
     public void fireWeapon(CombatStack target)       {  }
     public int weaponIndex()                         { return 0; }
     public int shots()                               { return 1; }

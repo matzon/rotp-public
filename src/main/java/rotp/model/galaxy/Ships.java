@@ -165,10 +165,18 @@ public class Ships implements Base, Serializable {
             totalDeployed += actual[i];
         }
         if (totalDeployed == 0) {
-            err("Unable to deploy.. actual ships deployed = 0");
+            err("Unable to deploy.. actualships  deployed = 0");
             return false;
         }
-
+        if (totalDeployed == sourceFleet.numShips()) {
+            deployFleet(sourceFleet, destSysId);
+            return true;
+        }
+        
+        // cannot redirect a partial fleet, even with HC
+        if (sourceFleet.inTransit()) 
+            return false;
+              
         // else we creat a new deployed subfleet from the source 
         StarSystem sys = sourceFleet.system();
         int empId = sourceFleet.empId;
@@ -378,8 +386,9 @@ public class Ships implements Base, Serializable {
         }
     }
     public void reloadBombs() {
-        for (ShipFleet fl: allFleets) 
-                fl.reloadBombs();
+        List<ShipFleet> fleetsAll = allFleetsCopy();
+        for (ShipFleet fl: fleetsAll) 
+            fl.reloadBombs();
     }
     public void disembarkRalliedFleets() {
         List<ShipFleet> fleetsAll = allFleetsCopy();
@@ -387,7 +396,6 @@ public class Ships implements Base, Serializable {
         for (ShipFleet fl: fleetsAll) {
             if (fl.isDeployed() && fl.isRallied()) {
                 fl.destSysId(fl.rallySysId());
-                fl.rallySysId(StarSystem.NULL_ID);
                 fl.launch();
             }
         }
@@ -486,8 +494,13 @@ public class Ships implements Base, Serializable {
         List<ShipFleet> fleetsAll = allFleetsCopy();
         
         for (ShipFleet fl: fleetsAll) {
-            if ((id(fl.system()) == sysId) && fl.isOrbiting())
-                fleets.add(fl);
+            // NPE was found on a map repaint during next turn. 
+            // unsure how this is possible since allFleets var is private with no accessor
+            // all allFleets.add() calls are in this class and only add new ShipFleet().
+            if (fl != null) {
+                if ((id(fl.system()) == sysId) && fl.isOrbiting())
+                    fleets.add(fl);
+            }
         }
         return fleets;
     }

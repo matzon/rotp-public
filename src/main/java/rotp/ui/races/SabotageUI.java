@@ -807,6 +807,8 @@ public final class SabotageUI extends BasePanel implements MouseListener {
             g.drawString(title, (w-sw)/2, s24);
         }
         @Override
+        public boolean suspendAnimationsDuringNextTurn()    { return false; }
+        @Override
         public Color shadeC()                          { return Color.darkGray; }
         @Override
         public Color backC()                           { return Color.gray; }
@@ -815,7 +817,7 @@ public final class SabotageUI extends BasePanel implements MouseListener {
         @Override
         public float systemClickRadius()             { return 1.0f; }
         @Override
-        public boolean canChangeMapScales()          { return false; }
+        public boolean canChangeMapScales()          { return true; }
         @Override
         public List<Sprite> controlSprites()      { return controls; }
         @Override
@@ -850,7 +852,7 @@ public final class SabotageUI extends BasePanel implements MouseListener {
                 Empire emp = mission.target();
                 map.centerX(avg(emp.minX(), emp.maxX()));
                 map.centerY(avg(emp.minY(), emp.maxY()));
-                map.setBounds(emp.minX(), emp.maxX(), emp.minY(), emp.maxY());
+                map.setBounds(emp.minX()-3, emp.maxX()+6, emp.minY()-6, emp.maxY());
                 sessionVar("SABOTAGEUI_MAP_INITIALIZED", true);
             }
         }

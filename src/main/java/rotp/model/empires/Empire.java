@@ -170,9 +170,9 @@ public final class Empire implements Base, NamedObject, Serializable {
     public void lastAttacker(NamedObject e)       { lastAttacker = e; }
     public List<ShipFleet> assignableFleets()     {
         if (tech().hyperspaceCommunications())
-            return galaxy().ships.notInTransitFleets(id);
-        else
             return galaxy().ships.allFleets(id);
+        else
+            return galaxy().ships.notInTransitFleets(id);
     }
     public List<Ship> visibleShips()              { return visibleShips; }
     public EmpireView[] empireViews()             { return empireViews; }
@@ -2162,7 +2162,7 @@ public final class Empire implements Base, NamedObject, Serializable {
                 if (ship.empId() != pl.id) { // don't care about player ships
                     StarSystem sys = g.system(ship.destSysId());
                     // don't care about ships going to already-added systems or AI systems
-                    if (!list.contains(sys) && sys.empire().isPlayer()) { 
+                    if (!list.contains(sys) && (sys.empire() == pl)) { 
                         Empire emp = g.empire(ship.empId());
                         // add if incoming fleet is hostile to player
                         if (emp.aggressiveWith(pl.id))
@@ -2174,7 +2174,7 @@ public final class Empire implements Base, NamedObject, Serializable {
                 if (ship.empId() != pl.id) { // don't care about player ships
                     StarSystem sys = g.system(ship.destSysId());
                     // don't care about ships going to already-added systems or AI systems
-                    if (!list.contains(sys) && sys.empire().isPlayer()) { 
+                    if (!list.contains(sys) && (sys.empire() == pl)) { 
                         Empire emp = g.empire(ship.empId());
                         // add if incoming fleet is hostile to player
                         if (emp.aggressiveWith(pl.id))
